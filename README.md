@@ -25,3 +25,22 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Preparation
+
+```
+$ ng generate module blue
+$ ng generate component blue --module=blue
+$
+$ ng generate module yellow
+$ ng generate component yellow --module=yellow
+$
+$ ng generate module red
+$ ng generate component red --module=red
+$
+$ npm install -D tailwindcss
+$ npx tailwindcss init
+```
+
+$ ng generate module hoge
+$ ng generate component hoge --module=hoge
