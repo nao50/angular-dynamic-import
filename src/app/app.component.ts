@@ -1,8 +1,9 @@
 import { Component, ComponentFactory, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef, Renderer2, ElementRef } from '@angular/core';
 import { WidgetService, Widget } from './services/widget.service';
-import { BlueComponent } from './blue/blue.component';
+// import { BlueComponent } from './blue/blue.component';
 import { RedComponent } from './red/red.component';
 import { YellowComponent } from './yellow/yellow.component';
+import { BlueModule } from './blue/blue.module';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,7 @@ import { YellowComponent } from './yellow/yellow.component';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  blueFactory!: ComponentFactory<BlueComponent>;
+  // blueFactory!: ComponentFactory<BlueComponent>;
   redFactory!: ComponentFactory<RedComponent>;
   yellowFactory!: ComponentFactory<YellowComponent>;
   @ViewChild('dynamic', { read: ViewContainerRef }) viewContainerRef!: ViewContainerRef;
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit {
     // const aaa = this.loadDynamicComponent('blue');
     // console.log('aaa:', aaa)
 
-    this.blueFactory = this.resolver.resolveComponentFactory(BlueComponent);
+    // this.blueFactory = this.resolver.resolveComponentFactory(BlueComponent);
     this.redFactory = this.resolver.resolveComponentFactory(RedComponent);
     this.yellowFactory = this.resolver.resolveComponentFactory(YellowComponent);
   }
@@ -56,14 +57,38 @@ export class AppComponent implements OnInit {
   }
 
   createComponentWithDynamicImport(type: string): void {
-    this.loadDynamicComponent(type);
+    // this.loadDynamicComponent(type);
+    this.loadDynamicComponent({
+      type: type,
+      title: '',
+      x: Math.floor(Math.random() * 100),
+      y: Math.floor(Math.random() * 100),
+      width: Math.floor(Math.random() * 100),
+      height: Math.floor(Math.random() * 100)
+    });
   }
 
   loadDynamicComponentWithComponentFactoryResolver(widget?: Widget): void {
     switch (widget!.type) {
       case "blue":
-        const blueComponentRef = this.viewContainerRef.createComponent(this.blueFactory);
-        blueComponentRef.instance.widget = widget!
+        // const blueComponentRef = this.viewContainerRef.createComponent(this.blueFactory);
+        // blueComponentRef.instance.widget = widget!
+
+        // import('./blue/blue.module').then(({BlueModule}) => {
+        //   console.log(BlueModule)
+        //   const aaa = new BlueModule()
+        //   aaa.BlueComponent
+        // })
+
+        import('./blue/blue.component').then(({BlueComponent}) => {
+          const component = this.resolver.resolveComponentFactory(BlueComponent);
+          const componentRef = this.viewContainerRef.createComponent(component);
+          componentRef.instance.widget = widget!
+          componentRef.instance.closed.subscribe(() => {
+            componentRef.destroy();
+          });
+        })
+
         break;
       case "red":
         const redComponentRef = this.viewContainerRef.createComponent(this.redFactory);
@@ -78,26 +103,17 @@ export class AppComponent implements OnInit {
     }
   }
 
-  async loadDynamicComponent(type: string): Promise<any> {
-    // const widgetModule = await import(`./${type}/${type}.module`)
-    const widgetModule = await import(`./blue/blue.module`)
-    // const widgetModule = await import(`./${type}/module`)
-    const aaa = new widgetModule.BlueModule;
-    console.log('aaa', aaa);
-    console.log('widgetModule', widgetModule.BlueModule);
-    // return new widgetModule.BlueModule.BlueComponent
-
-    // const widgetModule = await import(`./blue/blue.module`)
-    // const widgetComponent = await import(`./blue/blue.component`)
-    // const hoge = new widgetComponent.BlueComponent
-
-
-
-    let blue = this.renderer.createElement('app-blue');
-    this.renderer.setStyle(blue, 'width', '150px');
-    this.renderer.appendChild(this.dynamicImport.nativeElement, blue);
-
+  async loadDynamicComponent(widget?: Widget): Promise<any> {
+    // let widgetComponent;
+    const widgetModule = await import(`./${widget!.type}/${widget!.type}.module`);
     //
+    const widgetFactory = this.resolver.resolveComponentFactory<{
+      widget: Widget;
+    }>(widgetModule.component);
+    const widgetComponentRef = this.viewContainerRef.createComponent(
+      widgetFactory
+    );
+    widgetComponentRef.instance.widget = widget!;
   }
 
 }
