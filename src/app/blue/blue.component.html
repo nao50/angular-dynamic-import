@@ -1,18 +1,6 @@
 <!-- <div
   class="
     rounded-full
-    h-24
-    w-24
-    flex
-    items-center
-    justify-center
-    bg-blue-400
-    text-white
-  "
-> -->
-<div
-  class="
-    rounded-full
     flex
     items-center
     justify-center
@@ -26,4 +14,13 @@
   [style.top]="widget.y + '%'"
 >
   <p>{{ widget.type }}</p>
+</div> -->
+<!--  -->
+<div class="box" cdkDrag>
+  <form class="form">
+    <mat-form-field class="">
+      <mat-label>Favorite food</mat-label>
+      <input matInput placeholder="Ex. Pizza" value="Sushi" />
+    </mat-form-field>
+  </form>
 </div>

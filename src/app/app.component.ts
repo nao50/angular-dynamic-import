@@ -104,7 +104,6 @@ export class AppComponent implements OnInit {
   }
 
   async loadDynamicComponent(widget?: Widget): Promise<any> {
-    // let widgetComponent;
     const widgetModule = await import(`./${widget!.type}/${widget!.type}.module`);
     //
     const widgetFactory = this.resolver.resolveComponentFactory<{
